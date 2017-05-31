@@ -410,24 +410,24 @@ int probe_point_from_function(char *target, char *probe_def)
 	}
 
 	/* Find address of the function */
-    	if ((fd = open(target, O_RDONLY)) < 0) {
-        	fprintf(stderr, "Open on %s failed\n", target);
-        	ret = -1;
-        	goto err;
-    	}
+	if ((fd = open(target, O_RDONLY)) < 0) {
+		fprintf(stderr, "Open on %s failed\n", target);
+		ret = -1;
+		goto err;
+	}
 
 	/* Init libdwarf */
-    	if (dwarf_init(fd, DW_DLC_READ, 0, 0, &dbg, &dwarf_err) != DW_DLV_OK) {
-        	fprintf(stderr, "Failed DWARF initialization\n");
-        	//TODO: use dwarf err feature to print the error
-        	ret = -1;
-        	goto err;
-    	}
+	if (dwarf_init(fd, DW_DLC_READ, 0, 0, &dbg, &dwarf_err) != DW_DLV_OK) {
+		fprintf(stderr, "Failed DWARF initialization\n");
+		//TODO: use dwarf err feature to print the error
+		ret = -1;
+		goto err;
+	}
 
-    	/* Get the offset of the function in the binary */
+	/* Get the offset of the function in the binary */
 	long func_off = get_function_offset(dbg, function);
 	if (func_off == -1) {
-        	fprintf(stderr, "Failed to find the function offset\n");
+		fprintf(stderr, "Failed to find the function offset\n");
 		ret = -1;
 		goto err2;
 	}
@@ -444,9 +444,9 @@ int probe_point_from_function(char *target, char *probe_def)
 	print_probe_location(inode_number, (int)offset);
 err3:
 	// teardown libdwarf
-    	if (dwarf_finish(dbg, &dwarf_err) != DW_DLV_OK) {
-        	fprintf(stderr, "Failed DWARF finalization\n");
-    	}
+	if (dwarf_finish(dbg, &dwarf_err) != DW_DLV_OK) {
+		fprintf(stderr, "Failed DWARF finalization\n");
+	}
 err2:
 	close(fd);
 	free(function);
@@ -546,8 +546,6 @@ int probe_point_from_file_location(char *target, char *probe_def)
 	Dwarf_Error dwarf_err;
 	ino_t inode_number;
 
-
-
 	//Get the inode number of that binary
 	inode_number = get_inode_num(target);
 	if (inode_number == -1) {
@@ -557,9 +555,9 @@ int probe_point_from_file_location(char *target, char *probe_def)
 
 	src_filename = malloc(BUFF_SIZE * sizeof(char));
 	if (src_filename == NULL) {
-        	fprintf(stderr, "Failed to allocate buffer");
-        	ret = -1;
-        	goto err;
+		fprintf(stderr, "Failed to allocate buffer");
+		ret = -1;
+		goto err;
 	}
 
 	ret = sscanf(probe_def,"%[^:]:%d", src_filename, &src_lineno);
@@ -570,17 +568,17 @@ int probe_point_from_file_location(char *target, char *probe_def)
 		goto err2;
 	}
 
-    	if ((fd = open(target, O_RDONLY)) < 0) {
-        	fprintf(stderr, "Open on %s failed\n", target);
-        	ret = -1;
-        	goto err2;
-    	}
+	if ((fd = open(target, O_RDONLY)) < 0) {
+		fprintf(stderr, "Open on %s failed\n", target);
+		ret = -1;
+		goto err2;
+	}
 	// init libdwarf
-    	if (dwarf_init(fd, DW_DLC_READ, 0, 0, &dwarf_dbg, &dwarf_err) != DW_DLV_OK) {
-        	fprintf(stderr, "Failed DWARF initialization\n");
-        	ret = -1;
-        	goto err3;
-    	}
+	if (dwarf_init(fd, DW_DLC_READ, 0, 0, &dwarf_dbg, &dwarf_err) != DW_DLV_OK) {
+		fprintf(stderr, "Failed DWARF initialization\n");
+		ret = -1;
+		goto err3;
+	}
 
 	long line_addr = get_addr_src_line(dwarf_dbg, src_filename, src_lineno);
 	if (line_addr == -1) {
@@ -633,4 +631,3 @@ int main(int argc, char *argv[])
 		break;
 	}
 	return ret;
-}
